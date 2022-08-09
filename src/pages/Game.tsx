@@ -1,9 +1,35 @@
-import React, { useEffect, useRef } from 'react';
+import { Box, OrbitControls, OrthographicCamera } from '@react-three/drei';
+import { createRoot } from 'react-dom/client'
+import { Canvas, ThreeElements, useFrame } from '@react-three/fiber';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from "three";
+import GameScene from '../components/game/scene/GameScene';
+import Player from '../components/game/mesh/Player';
+//import * as PLAYER from '../components/game/mesh/Player';
 
-function Game() {
+function Game(props: ThreeElements['mesh']) {
+    const distance = 500;
+    const cameraRotationX = 50 * Math.PI / 180;
+    const cameraRotationY = 20 * Math.PI / 180;
+    const cameraRotationZ = -10 * Math.PI / 180;
+    const initialCameraPositionY = -Math.tan(cameraRotationX) * distance;
+    const initialCameraPositionX = Math.tan(cameraRotationY) * Math.sqrt(distance ** 2 + initialCameraPositionY ** 2);
+    //const columns = 17;
+    //const mountRef = useRef(null);
 
-    const mountRef = useRef(null);
+    /*
+    const [lanes, setLanes] = useState();
+    const [currentLane, setCurrentLane] = useState(0);
+    const [currentColumn, setCurrentColumn] = useState(Math.floor(columns / 2));
+
+    const [previousTimestamp, setPreviousTimestamp] = useState<number | null>(null);
+    const [startMoving, setStartMoving] = useState(false);
+    const [moves, setMoves] = useState([]);
+    const [stepStartTimestamp, setStepStartTimestamp] = useState<number | undefined>();
+    */
+
+    /*
+
     useEffect(() => {
 
         var scene = new THREE.Scene();
@@ -39,12 +65,50 @@ function Game() {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
         return () => (mountRef.current as any).removeChild(renderer.domElement);
-    });
 
+
+
+    }, []);
+*/
+    //const a = new THREE.OrthographicCamera()
     return (
-        <div ref={mountRef}>
+        <div style={{ height: '100vh', overflow: 'hidden' }}>
+            <GameScene>
+                <color attach={"background"} args={["#fffff3"]} />
+                <OrthographicCamera
+
+                    //position={new THREE.Vector3(initialCameraPositionX, initialCameraPositionY, distance)}
+                    position={new THREE.Vector3(0, 0, 0)}
+                    rotation={new THREE.Euler(cameraRotationX, cameraRotationY, cameraRotationZ, 'XYZ')}
+                    //rotation={new THREE.Euler(cameraRotationX, cameraRotationY, cameraRotationZ, 'XYZ')}
+                    left={window.innerWidth / -2}
+                    right={window.innerWidth / 2}
+                    top={window.innerHeight / 2}
+                    bottom={window.innerHeight / -2}
+                //near={0.1}
+                //far={10000}
+                //zoom={40} 
+                >
+
+                    {/* <OrthographicCamera
+                    left={window.innerWidth / -2}
+                    right={window.innerWidth / 2}
+                    top={window.innerHeight / 2}
+                    bottom={window.innerHeight / -2}
+                    near={0.1}
+                    far={10000}
+                    rotation={[cameraRotationX, cameraRotationY, cameraRotationZ]}
+                    position={[initialCameraPositionX, initialCameraPositionX, distance]}
+                /> */}
+                    <gridHelper args={[100, 100, `grey`, `gray`]} />
+                    <Player />
+
+                </OrthographicCamera>
+                <ambientLight />
+                <OrbitControls />
+            </GameScene>
         </div>
-    );
+    )
 }
 
 export default Game;
