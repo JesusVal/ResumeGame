@@ -2,7 +2,7 @@ import * as THREE from 'three'
 
 export const PLAYER_SIZE = 15
 
-export function Player(zoom: number, playerColor = 0xffffff) {
+export function Player(zoom: number, playerColor = 0xffffff): THREE.Group {
   const player = new THREE.Group()
 
   const body = new THREE.Mesh(
