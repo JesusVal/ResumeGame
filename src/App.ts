@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import * as GAMECAMERA from './components/camera/GameCamera'
 import * as GAMELIGHTS from './components/lights/GameLights'
+import { generateMap } from './components/map/Map'
 import { Player } from './components/mesh/player/Player'
 
 const counterDOM = document.getElementById('counter')
@@ -60,16 +61,7 @@ scene.add(helper)
 
 scene.add(GAMELIGHTS.DefaultDirectionalBlackLight())
 
-const generateLanes = () =>
-  [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    .map((index: number) => {
-      const lane = Lane(index) as any
-      lane.mesh.position.y = index * positionWidth * zoom
-      scene.add(lane.mesh)
-      return lane
-    })
-    .filter((lane) => lane.index >= 0)
-
+/*
 const addLane = () => {
   const index: number = lanes.length
   const lane = Lane(index) as any
@@ -77,9 +69,11 @@ const addLane = () => {
   scene.add(lane.mesh)
   lanes.push(lane)
 }
+*/
 
 const initaliseValues = () => {
-  lanes = generateLanes()
+  //lanes = generateLanes()
+  lanes = generateMap(scene, columns, boardWidth, positionWidth, zoom)
 
   currentLane = 0
   currentColumn = Math.floor(columns / 2)
@@ -108,59 +102,8 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
-console.log('rendered innerWidth'+ window.innerWidth)
-console.log('rendered innerHeight'+ window.innerHeight)
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
-
-function Grass() {
-  const grass = new THREE.Group()
-
-  const createSection = (color: any) =>
-    new THREE.Mesh(
-      new THREE.BoxBufferGeometry(boardWidth * zoom, positionWidth * zoom, 3 * zoom),
-      new THREE.MeshPhongMaterial({ color }),
-    )
-
-  const middle = createSection(0xbaf455)
-  middle.receiveShadow = true
-  grass.add(middle)
-
-  const left = createSection(0x99c846)
-  left.position.x = -boardWidth * zoom
-  grass.add(left)
-
-  const right = createSection(0x99c846)
-  right.position.x = boardWidth * zoom
-  grass.add(right)
-
-  grass.position.z = 1.5 * zoom
-  return grass
-}
-
-function Lane(index: number) {
-  let lane = {
-    index: 0,
-    type: 'field',
-    mesh: null,
-    occupiedPositions: null,
-    threes: null,
-  }
-  lane.index = index
-  lane.type = 'field'
-  //lane.type = index <= 0 ? 'field' : laneTypes[Math.floor(Math.random() * laneTypes.length)]
-
-  switch (lane.type) {
-    case 'field': {
-      lane.type = 'field'
-      lane.mesh = Grass() as any
-      break
-    }
-  }
-
-  return lane
-}
-
 ;(document.querySelector('#retry') as any).addEventListener('click', () => {
   lanes.forEach((lane) => scene.remove(lane.mesh))
   initaliseValues()
@@ -205,7 +148,7 @@ function move(direction: string) {
     )
       return
     if (!stepStartTimestamp) startMoving = true
-    addLane()
+    //addLane()
   } else if (direction === 'backward') {
     if (finalPositions.lane === 0) return
     if (
